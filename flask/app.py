@@ -7,7 +7,7 @@ from PIL import Image
 import imutils
 import numpy as np
 import cv2
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import dlib
 from scipy.spatial import distance as dist
@@ -59,6 +59,7 @@ def filter_space_between(arr, us=500000):
         if init is None:
             init = arr[i]
             i += 1
+            continue
         if arr[i] - init < timedelta(microseconds=us):
             del arr[i]
         else:
@@ -66,15 +67,12 @@ def filter_space_between(arr, us=500000):
             i += 1
     return arr
 
-converted = list(map(gt, d))
-filtered = filter_space_between(converted)
-
-
 def filter_duplicates():
     global TOTAL
     
     converted = list(map(gt, TOTAL))
     TOTAL = filter_space_between(converted)
+    TOTAL = list(map(datetime.isoformat, TOTAL))
         
 
 # to detect the facial region
