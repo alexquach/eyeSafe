@@ -11,6 +11,10 @@ import cv2
 import dlib
 from scipy.spatial import distance as dist
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR) #remove constant logs and set to error only
+
 JAWLINE_POINTS = list(range(0, 17))
 RIGHT_EYEBROW_POINTS = list(range(17, 22))
 LEFT_EYEBROW_POINTS = list(range(22, 27))
@@ -98,7 +102,9 @@ def image(data_image):
         ear_avg = (ear_left + ear_right) / 2.0
         # detect the eye blink
         
-        print(ear_avg)
+        if ear_avg < EYE_AR_THRESH:
+            print(ear_avg) #blinked!
+            
         # if ear_avg < EYE_AR_THRESH:
         #     COUNTER += 1
         # else:
