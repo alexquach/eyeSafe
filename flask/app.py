@@ -8,6 +8,7 @@ import imutils
 import numpy as np
 import cv2
 from datetime import datetime, timedelta
+import random
 
 import dlib
 from scipy.spatial import distance as dist
@@ -31,6 +32,8 @@ EAR_AVG = 0
 
 COUNTER=0
 TOTAL=[]
+BOX_CHALLENGE = False
+START, END, AREA = None, None, None
 
 def eye_aspect_ratio(eye):
     # compute the euclidean distance between the vertical eye landmarks
@@ -74,6 +77,18 @@ def filter_duplicates():
     TOTAL = filter_space_between(converted)
     TOTAL = list(map(datetime.isoformat, TOTAL))
         
+def get_random_box(frame):
+    height = random.randint(0, frame.shape[0])
+    width = random.randint(0, frame.shape[1])
+
+    height = 250
+    width = 100
+
+    d_height = 100
+    d_width = 70
+
+    return (width, height), (width+d_width, height+d_height), d_height*d_width
+
 
 # to detect the facial region
 detector = dlib.get_frontal_face_detector()
@@ -92,6 +107,19 @@ def poll():
     TOTAL = []
     return jsonify(response)
 
+@app.route('/getbox', methods=['GET'])
+def getbox():
+    global BOX_CHALLENGE
+
+    return jsonify({'box_challenge_status': BOX_CHALLENGE})
+
+@app.route('/setbox', methods=['GET'])
+def setbox():
+    global BOX_CHALLENGE
+    BOX_CHALLENGE = True
+
+    return jsonify({'set_box_challenge': BOX_CHALLENGE})
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     return render_template('second.html')
@@ -100,6 +128,10 @@ def index():
 def image(data_image):
     global COUNTER
     global TOTAL
+    global BOX_CHALLENGE
+    global START
+    global END
+    global AREA
 
     sbuf = StringIO()
     sbuf.write(data_image)
@@ -119,6 +151,24 @@ def image(data_image):
         y = rect.top()
         x1 = rect.right()
         y1 = rect.bottom()
+
+        if (BOX_CHALLENGE): 
+            if not START:
+                START, END, AREA = get_random_box(frame)
+            else:
+                x_diff = abs(x-START[0])
+                y_diff = abs(y-START[1])
+                area_diff = abs(AREA- (x1-x) * (y1-y) )
+
+                print("X: {}".format(x_diff))
+                print("Y: {}".format(y_diff))
+                print("Area: {}".format(area_diff))
+
+                if x_diff < 10 and y_diff < 10 and area_diff < 5000:
+                    BOX_CHALLENGE = False
+                    START, END, AREA = None, None, None
+
+
         # get the facial landmarks
         landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, rect).parts()])
         # get the left eye landmarks
@@ -149,7 +199,8 @@ def image(data_image):
         #         TOTAL += 1
         #         print("{} Eye blinked {}".format(TOTAL, ear_avg))
         #     COUNTER = 0
-
+    if START:
+        cv2.rectangle(frame, START, END, (0, 0, 255), 2)
     imgencode = cv2.imencode('.jpg', frame)[1]
 
     # base64 encode
