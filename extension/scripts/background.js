@@ -65,7 +65,7 @@ function pomodoro() {
      * Step 4. Constant poll /getbox to determine state.
      * Step 5. If /getbox = True, navigate back to the original tab.
     */
-    alert("You've been working hard... Let's have a quick break shall we?");
+    alert("You've been working hard... Let's have a quick break shall we? Simply hold your face still in the green box until it magically disappears!");
     
     var current_tab_id = null;
     chrome.tabs.query({},function(tabs){     
