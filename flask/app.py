@@ -201,7 +201,7 @@ def image(data_image):
         #         print("{} Eye blinked {}".format(TOTAL, ear_avg))
         #     COUNTER = 0
     if START:
-        cv2.rectangle(frame, START, END, (0, 0, 255), 2)
+        cv2.rectangle(frame, START, END, (0, 255, 0), 2)
     imgencode = cv2.imencode('.jpg', frame)[1]
 
     # base64 encode
