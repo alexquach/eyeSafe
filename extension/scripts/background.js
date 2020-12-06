@@ -1,4 +1,9 @@
+/* define urls. */
 const POLL_URL = "http://127.0.0.1:5000/poll";
+const GET_POMODORO_URL = "http://127.0.0.1:5000/getbox";
+const SET_POMODORO_URL = "http://127.0.0.1:5000/setbox";
+
+
 const LOWER_THRESHOLD_BLINK_RATE = 10;
 const HIGHER_THRESHOLD_BLINK_RATE = 15;
 
@@ -51,6 +56,71 @@ function poll_data() {
     xhr.send();
 }
 
+
+function pomodoro() {
+    /**
+     * Step 1. Notify an alert to launch pomodoro.
+     * Step 2. Upon acceptance. Take user to bounding box simulator.
+     * Step 3. Request /setbox.
+     * Step 4. Constant poll /getbox to determine state.
+     * Step 5. If /getbox = True, navigate back to the original tab.
+    */
+    alert("You've been working hard... Let's have a quick break shall we?");
+    
+    var current_tab_id = null;
+    chrome.tabs.query({},function(tabs){     
+        tabs.forEach(function(tab){
+            if(current_tab_id == null)
+            {
+                current_tab_id = tab.id; //store current/original tab
+            }
+
+            if (tab.title == "127.0.0.1:5000") {
+                
+                const simulation_id = tab.id;
+                /* Perform navigation via duplication */
+                chrome.tabs.duplicate(simulation_id, function(navigate){
+                    /* Request setBox */
+                    const xhr = new XMLHttpRequest();
+                    xhr.addEventListener('readystatechange', function () {   // this is probably the ugliest code i've written!
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            let pomo = JSON.parse(xhr.response)["set_box_challenge"];
+                            console.log("INO FHAE",  pomo);
+                            /* Set Interval of 2-sec */
+                            var refreshId = setInterval(function () {
+                                let req = new XMLHttpRequest();
+                                req.addEventListener('readystatechange', function () { //if this doesn't make u throw up...
+                                    if (req.readyState == 4 && req.status == 200) {
+                                        let isDone = JSON.parse(req.response)["box_challenge_status"];
+                                        console.log("GET BOX:", isDone);
+                                        if(isDone === false) //break interval
+                                        {
+                                            chrome.tabs.remove(tab.id, function () {
+                                                chrome.tabs.duplicate(current_tab_id, function(navigate_org){
+                                                    console.log("Performing original navigation");
+                                                    clearInterval(refreshId);
+                                                });
+                                            });
+                                        }
+                                    }
+                                });
+                                req.open('GET', GET_POMODORO_URL);
+                                req.send();
+
+                            }, 1000);
+                            
+                        }
+                    });
+
+                    xhr.open('GET', SET_POMODORO_URL);
+                    xhr.send();
+                });
+
+            }
+        });
+     });
+}
+
 /*
  * Ensure document is loading properly and content_script can inject message
  * Source: https://stackoverflow.com/questions/23895377/sending-message-from-a-background-script-to-a-content-script-then-to-a-injected 
@@ -95,10 +165,10 @@ function check_zoom_update(count_arr) {
         console.log(last_five[i]);
 
         if (last_five[i] < LOWER_THRESHOLD_BLINK_RATE) {
-            zoom_in_counter += THRESHOLD;
+            zoom_in_counter -= THRESHOLD;
         }
         else if (last_five[i] > HIGHER_THRESHOLD_BLINK_RATE) {
-            zoom_out_counter -= THRESHOLD;
+            zoom_out_counter += THRESHOLD;
         }
     }
 
@@ -106,4 +176,10 @@ function check_zoom_update(count_arr) {
 }
 
 
+/* Constant polling for capturing analytics */
 setInterval(poll_data, 7000);
+
+
+
+/* Constant 20-minute pooling for pomodoro timer */
+setInterval(pomodoro, 60000);
