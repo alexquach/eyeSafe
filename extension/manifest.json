@@ -1,0 +1,36 @@
+{
+    "manifest_version" : 2,
+    "name" : "eyeSafe",
+    "description" : "Save you eyes man!",
+    "homepage_url": "https://github.com/QasimWani/LeetHub",
+    "version" : "0.0.1",
+    "author" : "Qasim Wani",
+    "browser_action": {
+        "default_icon": "assets/eyeSafe.jpeg",
+        "default_popup": "index.html"
+    },
+    "icons": {
+        "16": "assets/eyeSafe.jpeg",
+        "48": "assets/eyeSafe.jpeg",
+        "128": "assets/eyeSafe.jpeg"
+      },
+      "background": {
+        "scripts": ["scripts/background.js"],
+        "persistent": false
+      },
+    "permissions": [
+        "tabs",
+        "activeTab",
+        "storage"
+     ],
+     "content_scripts": [
+        {
+          "matches": [
+            "http://localhost/*"
+          ],
+          "js": ["scripts/leetcode.js", "scripts/authorize.js"],
+          "run_at": "document_start"
+        }
+      ],
+      "content_security_policy": "script-src 'self' https://code.jquery.com/jquery-3.3.1.min.js https://github.com/login/oauth/authorize https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js; object-src 'self'"
+}
