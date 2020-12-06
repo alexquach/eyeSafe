@@ -1,4 +1,4 @@
-# eye-Safe. [Devpost](https://devpost.com/software/eyesafe)
+# eyeSafe [Devpost](https://devpost.com/software/eyesafe)
 
 [![eyeSafe Demo](http://img.youtube.com/vi/fJ4aXA5IY6Q/0.jpg)](https://www.youtube.com/watch?v=fJ4aXA5IY6Q "eyeSafe demo")
 
