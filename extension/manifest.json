@@ -29,5 +29,5 @@
         "unlimitedStorage",
         "<all_urls>"
      ],
-      "content_security_policy": "script-src 'self' https://code.jquery.com/jquery-3.3.1.min.js https://github.com/login/oauth/authorize https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js; object-src 'self'"
+      "content_security_policy": "script-src 'self' https://code.jquery.com/jquery-3.3.1.min.js https://github.com/login/oauth/authorize https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js; object-src 'self'"
 }
