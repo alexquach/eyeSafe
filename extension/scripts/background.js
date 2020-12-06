@@ -12,13 +12,13 @@ function poll_data() {
             
             console.log("COUNTER", JSON.parse(xhr.response), count);
 
-            chrome.storage.sync.get("eyeSafe", data=>{
+            chrome.storage.local.get("eyeSafe", data=>{
                 let eyeSafe = data.eyeSafe;
                 if (eyeSafe) {
                     eyeSafe["days"]["get_date"]["count"] += count;
                     eyeSafe["days"]["get_date"]["times"].push(times);
 
-                    chrome.storage.sync.set({"eyeSafe" : eyeSafe}, post_data=>{
+                    chrome.storage.local.set({"eyeSafe" : eyeSafe}, post_data=>{
                         console.log("Appended data!");
                         console.log(eyeSafe);
                     });
@@ -32,7 +32,7 @@ function poll_data() {
                         "count" : count,
                         "times" : times
                     };
-                    chrome.storage.sync.set({"eyeSafe" : eyeSafe}, post_data=>{
+                    chrome.storage.local.set({"eyeSafe" : eyeSafe}, post_data=>{
                         console.log("Saved data!");
                         console.log(eyeSafe);
                     });
