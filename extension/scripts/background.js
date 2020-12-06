@@ -15,8 +15,8 @@ function poll_data() {
             chrome.storage.local.get("eyeSafe", data=>{
                 let eyeSafe = data.eyeSafe;
                 if (eyeSafe) {
-                    eyeSafe["days"]["get_date"]["count"] += count;
-                    eyeSafe["days"]["get_date"]["times"].push(times);
+                    eyeSafe["get_date"]["count"] += count;
+                    eyeSafe["get_date"]["times"].push(times);
 
                     chrome.storage.local.set({"eyeSafe" : eyeSafe}, post_data=>{
                         console.log("Appended data!");
@@ -26,9 +26,9 @@ function poll_data() {
                 else {
                     /* Create new object */
                     eyeSafe = {
-                        "days": {}
+                        "get_date": {}
                     };
-                    eyeSafe["days"]["get_date"] = {
+                    eyeSafe["get_date"] = {
                         "count" : count,
                         "times" : times
                     };
