@@ -95,6 +95,8 @@ def get_random_box(frame):
 
     return (width, height), (width+d_width, height+d_height), d_height*d_width
 
+def offset_text(start):
+    return (start[0], start[1] - 10)
 
 # to detect the facial region
 detector = dlib.get_frontal_face_detector()
@@ -201,7 +203,8 @@ def image(data_image):
         #         print("{} Eye blinked {}".format(TOTAL, ear_avg))
         #     COUNTER = 0
     if START:
-        cv2.rectangle(frame, START, END, (0, 255, 0), 2)
+        cv2.rectangle(frame, START, END, (0, 0, 255), 2)
+        cv2.putText(frame, "Position face here!", offset_text(START), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 255), 1)
     imgencode = cv2.imencode('.jpg', frame)[1]
 
     # base64 encode
