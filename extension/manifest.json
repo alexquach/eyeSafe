@@ -21,7 +21,8 @@
     "permissions": [
         "tabs",
         "activeTab",
-        "storage"
+        "storage",
+        "http://127.0.0.1/*"
      ],
       "content_security_policy": "script-src 'self' https://code.jquery.com/jquery-3.3.1.min.js https://github.com/login/oauth/authorize https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js; object-src 'self'"
 }
