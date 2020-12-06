@@ -18,11 +18,11 @@
 <table style="border-collapse: separate;"><tr>
   <td style="border-spacing:2em 0"> 
       <a href="https://www.youtube.com/watch?v=fJ4aXA5IY6Q">
-        <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F1000logos.net%2Fwp-content%2Fuploads%2F2017%2F05%2FNew-YouTube-logo.jpg&f=1&nofb=1" alt="YouTube video" height=200 width=300/>
+        <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F1000logos.net%2Fwp-content%2Fuploads%2F2017%2F05%2FNew-YouTube-logo.jpg&f=1&nofb=1" alt="YouTube video" height=100 width=150/>
       </a>  
   </td>
   <td style="border-spacing:2em 0"> 
-      <a href="https://devpost.com/software/eyesafe" target="_blank"><img src="https://devpost-challengepost.netdna-ssl.com/assets/reimagine2/devpost-logo-646bdf6ac6663230947a952f8d354cad.svg" alt="LeetHub - Automatically sync your code b/w Leetcode & GitHub. | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+      <a href="https://devpost.com/software/eyesafe" target="_blank"><img src="https://devpost-challengepost.netdna-ssl.com/assets/reimagine2/devpost-logo-646bdf6ac6663230947a952f8d354cad.svg" alt="LeetHub - Automatically sync your code b/w Leetcode & GitHub. | Product Hunt" style="width: 150px; height: 100px;" width="250" height="54" /></a>
 
   </td>
 </tr></table>
