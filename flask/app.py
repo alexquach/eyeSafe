@@ -55,7 +55,7 @@ socketio = SocketIO(app)
 def poll():
     global TOTAL
     print(TOTAL)
-    response = {"count": len(TOTAL), "datetime": datetime.now().isoformat()}
+    response = {"count": len(TOTAL), "sentTime": datetime.now().isoformat(), "datetime_array": TOTAL}
 
     TOTAL = []
     return jsonify(response)
