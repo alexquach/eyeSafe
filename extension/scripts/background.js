@@ -165,10 +165,10 @@ function check_zoom_update(count_arr) {
         console.log(last_five[i]);
 
         if (last_five[i] < LOWER_THRESHOLD_BLINK_RATE) {
-            zoom_in_counter -= THRESHOLD;
+            zoom_in_counter += THRESHOLD;
         }
         else if (last_five[i] > HIGHER_THRESHOLD_BLINK_RATE) {
-            zoom_out_counter += THRESHOLD;
+            zoom_out_counter -= THRESHOLD;
         }
     }
 
@@ -182,4 +182,4 @@ setInterval(poll_data, 7000);
 
 
 /* Constant 20-minute pooling for pomodoro timer */
-setInterval(pomodoro, 60000);
+setInterval(pomodoro, 20*60000);
