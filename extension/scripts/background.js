@@ -13,7 +13,7 @@ function poll_data() {
             const times = JSON.parse(xhr.response)["datetime_array"];
             const res_date = JSON.parse(xhr.response)["sentTime"].substring(0, 10);
             
-            console.log("COUNTER", JSON.parse(xhr.response), count);
+            console.log("Blink Count", count);
 
             chrome.storage.local.get("eyeSafe", data=>{
                 let eyeSafe = data.eyeSafe;
@@ -23,7 +23,11 @@ function poll_data() {
 
                     chrome.storage.local.set({"eyeSafe" : eyeSafe}, post_data=>{
                         console.log("Appended data!");
-                        console.log(eyeSafe);
+                        if (eyeSafe[res_date]["count"].length >= 5) // only make Zoom changes when have enough data (5 min).
+                        {
+                            check_zoom_update(eyeSafe[res_date]["count"])
+                        }
+
                     });
                 }
                 else {
@@ -37,11 +41,8 @@ function poll_data() {
                     };
                     chrome.storage.local.set({"eyeSafe" : eyeSafe}, post_data=>{
                         console.log("Saved data!");
-                        console.log(eyeSafe);
                     });
                 }
-
-                check_zoom_update(eyeSafe[res_date]["count"])
             });
         }
       }
@@ -50,49 +51,59 @@ function poll_data() {
     xhr.send();
 }
 
-function receiveText(res){
-    console.log(res);
+/*
+ * Ensure document is loading properly and content_script can inject message
+ * Source: https://stackoverflow.com/questions/23895377/sending-message-from-a-background-script-to-a-content-script-then-to-a-injected 
+ */
+function ensureSendMessage(tabId, message, callback){
+    chrome.tabs.sendMessage(tabId, {ping: true}, function(response){
+        if(response && response.pong) { // Content script ready
+            console.log("Sent message to content script with zoom:", message.zoom_height);
+            chrome.tabs.sendMessage(tabId, message, callback);
+      } else { // No listener on the other end
+        chrome.tabs.executeScript(tabId, {file: "scripts/root.js"}, function(){
+          if(chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+            throw Error("Unable to inject script into tab " + tabId);
+          }
+          // OK, now it's injected and ready
+          chrome.tabs.sendMessage(tabId, message, callback);
+        });
+      }
+    });
+  }
+
+function zoom(zoom_height){
+    chrome.tabs.query({active:true,windowType:"normal", currentWindow: true}, data=>{
+        let id = data[0].id;
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            ensureSendMessage(id, {zoom_height: zoom_height});
+        });
+    });
 }
 
-function zoom(paramvar){
-    console.log('inside zoom')
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.executeScript(
-            tabs[0].id,
-            {
-            code: 'var zoomStr = document.body.style.zoom; currentZoom = parseInt(zoomStr.substring(0, zoomStr.indexOf('%'))); currentZoom += ' + paramvar + '; document.body.style.zoom = currentZoom + "%"; console.log("print inside executeScript")'
-            //If you had something somewhat more complex you can use an IIFE:
-            //code: '(function (){return document.body.innerText;})();'
-            //If your code was complex, you should store it in a
-            // separate .js file, which you inject with the file: property.
-        },receiveText);
-    })
 
-}
 
 function check_zoom_update(count_arr) {
-    last_five = count_arr.slice(count_arr.length - 5)
+    const last_five = count_arr.slice(count_arr.length - 5);
+    const THRESHOLD = 5; //zoom constant
 
-    zoom_in_counter = 0;
-    zoom_out_counter = 0;
+    let zoom_in_counter = 0;
+    let zoom_out_counter = 0;
+    
     for (i = 0; i < last_five.length; i++) {
+        console.log(last_five[i]);
+
         if (last_five[i] < LOWER_THRESHOLD_BLINK_RATE) {
-            zoom_in_counter ++;
+            zoom_in_counter += THRESHOLD;
         }
         else if (last_five[i] > HIGHER_THRESHOLD_BLINK_RATE) {
-            zoom_out_counter ++;
+            zoom_out_counter -= THRESHOLD;
         }
     }
 
-    if (zoom_in_counter >= 4) {
-        zoom(10)
-    }
-    if (zoom_out_counter >= 3) {
-        zoom(-10)
-    }
-    console.log(zoom_in_counter)
-    console.log(zoom_out_counter)
-
+    zoom(zoom_in_counter);
+    zoom(zoom_out_counter);
 }
 
 
