@@ -48,6 +48,9 @@ def get_random_box(frame):
 
     return (width, height), (width+d_width, height+d_height), d_height*d_width
 
+def offset_text(start):
+    return (start[0], start[1] - 10)
+
 bounding = True
 start, end, area = None, None, None
 
@@ -57,9 +60,6 @@ while True:
     # get the frame
     ret, frame = cap.read()
     #frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-
-    
-
     if ret:
         # convert the frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -121,6 +121,7 @@ while True:
             cv2.putText(frame, "EAR {}".format(ear_avg), (10, 60), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 255), 1)
         if start:
             cv2.rectangle(frame, start, end, (0, 0, 255), 2)
+            cv2.putText(frame, "Position face here!", offset_text(start), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 255), 1)
         
         cv2.imshow("Winks Found", frame)
         key = cv2.waitKey(1) & 0xFF
