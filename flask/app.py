@@ -99,13 +99,23 @@ def image(data_image):
         # detect the eye blink
         
         print(ear_avg)
-        if ear_avg < EYE_AR_THRESH:
-            COUNTER += 1
-        else:
-            if COUNTER >= EYE_AR_CONSEC_FRAMES:
-                TOTAL += 1
-                print("{} Eye blinked {}".format(TOTAL, ear_avg))
-            COUNTER = 0
+        # if ear_avg < EYE_AR_THRESH:
+        #     COUNTER += 1
+        # else:
+        #     if COUNTER >= EYE_AR_CONSEC_FRAMES:
+        #         TOTAL += 1
+        #         print("{} Eye blinked {}".format(TOTAL, ear_avg))
+        #     COUNTER = 0
+
+    imgencode = cv2.imencode('.jpg', frame)[1]
+
+    # base64 encode
+    stringData = base64.b64encode(imgencode).decode('utf-8')
+    b64_src = 'data:image/jpg;base64,'
+    stringData = b64_src + stringData
+
+    # emit the frame back
+    emit('response_back', stringData)
 
     # # Process the image frame
     # frame = imutils.resize(frame, width=700)

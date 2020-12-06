@@ -1,8 +1,12 @@
 
 
-<canvas id="canvasFrame">
+<canvas id="canvasFrame" hidden>
     <video autoplay="true" id="videoInput" width="640" height="480"></video></canvas>
 <canvas id="canvasOutput"></canvas>
+
+<div class = 'video'>
+    <img id="image">
+</div>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 <script src="https://docs.opencv.org/4.5.0/opencv.js"></script>
@@ -29,7 +33,7 @@
         let src = new cv.Mat(height, width, cv.CV_8UC4);
         let dst = new cv.Mat(height, width, cv.CV_8UC1);
         let cap = new cv.VideoCapture(video);
-        const FPS = 30;
+        const FPS = 20;
         function processVideo() {
             let begin = Date.now();
             cap.read(src);
@@ -48,6 +52,11 @@
         }
         // schedule first one.
         setTimeout(processVideo, 0);
+
+        socket.on('response_back', function(image){
+            const image_id = document.getElementById('image');
+            image_id.src = image;
+        });
     }
 
 
