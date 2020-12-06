@@ -44,6 +44,39 @@ def eye_aspect_ratio(eye):
     ear = (A + B) / (2 * C)
     return ear
 
+def gt(dt_str):
+    """ Converts str to datetime """
+    dt, _, us = dt_str.partition(".")
+    dt = datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
+    us = int(us.rstrip("Z"), 10)
+    return dt + timedelta(microseconds=us)
+
+def filter_space_between(arr, us=500000):
+    """ Ensures theres at least `us` microseconds between array items """
+    i = 0
+    init = None
+    while len(arr) > i:
+        if init is None:
+            init = arr[i]
+            i += 1
+        if arr[i] - init < timedelta(microseconds=us):
+            del arr[i]
+        else:
+            init = arr[i]
+            i += 1
+    return arr
+
+converted = list(map(gt, d))
+filtered = filter_space_between(converted)
+
+
+def filter_duplicates():
+    global TOTAL
+    
+    converted = list(map(gt, TOTAL))
+    TOTAL = filter_space_between(converted)
+        
+
 # to detect the facial region
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
@@ -54,6 +87,7 @@ socketio = SocketIO(app)
 @app.route('/poll', methods=['GET'])
 def poll():
     global TOTAL
+    filter_duplicates()
     print(TOTAL)
     response = {"count": len(TOTAL), "sentTime": datetime.now().isoformat(), "datetime_array": TOTAL}
 
