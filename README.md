@@ -36,7 +36,6 @@
 - Go to 127.0.0.1:5000
 - Browse!
 
-## HealthTrack
 ## Inspiration
 As many of us have been lucky enough to quarantine indoors for school and work, the amount of time spent on screens have skyrocketed. Doctors estimate that healthy blinking rates are 15-20 times per minute; however while using a computer, our blinking rates are about 1/3 of the healthy rate. This leads to eye strain, dryness, and unhealthy eye habits. We take on this challenge to influence human behavior with computer vision technology.
 
