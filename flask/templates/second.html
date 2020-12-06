@@ -1,0 +1,68 @@
+
+
+<canvas id="canvasFrame">
+    <video autoplay="true" id="videoInput" width="640" height="480"></video></canvas>
+<canvas id="canvasOutput"></canvas>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+<script src="https://docs.opencv.org/4.5.0/opencv.js"></script>
+<script>
+    function onloadCallback() {
+        let video = document.getElementById("videoInput"); // video is the id of video tag
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function(err) {
+                console.log("An error occurred! " + err);
+            });
+
+        var socket = io('127.0.0.1:5000');
+        socket.on('connect', function(){
+            console.log("Connected...!", socket.connected)
+        });
+
+        var height = 480 ;
+        var width = 640 ;
+
+        let src = new cv.Mat(height, width, cv.CV_8UC4);
+        let dst = new cv.Mat(height, width, cv.CV_8UC1);
+        let cap = new cv.VideoCapture(video);
+        const FPS = 30;
+        function processVideo() {
+            let begin = Date.now();
+            cap.read(src);
+            cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+            cv.imshow("canvasOutput", dst);
+
+            var type = "image/png"
+            var data = document.getElementById("canvasOutput").toDataURL(type);
+            data = data.replace('data:' + type + ';base64,', ''); //split off junk at the beginning
+
+            socket.emit('image', data);
+
+            // schedule next one.
+            let delay = 1000/FPS - (Date.now() - begin);
+            setTimeout(processVideo, delay);
+        }
+        // schedule first one.
+        setTimeout(processVideo, 0);
+    }
+
+
+    if (cv.getBuildInformation)
+    {
+        console.log(cv.getBuildInformation());
+        onloadCallback();
+    }
+    else
+    {
+        // WASM
+        cv['onRuntimeInitialized']=()=>{
+            console.log(cv.getBuildInformation());
+            onloadCallback();
+        }
+    }
+
+</script>
