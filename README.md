@@ -1,15 +1,12 @@
 # eye-Safe
 [Devpost](https://devpost.com/software/eyesafe)
 
-##To run locally:
-Start flask server
+## To run locally:
+- Start flask server
 `$flask run`
-
-Upload extension/ folder to Chrome extension
-
-Go to 127.0.0.1:5000
-
-Browse!
+- Upload extension/ folder to Chrome extension
+- Go to 127.0.0.1:5000
+- Browse!
 
 ## HealthTrack
 ## Inspiration
