@@ -86,7 +86,7 @@ function zoom(zoom_height){
 
 function check_zoom_update(count_arr) {
     const last_five = count_arr.slice(count_arr.length - 5);
-    const THRESHOLD = 5; //zoom constant
+    const THRESHOLD = 1/3.6; //zoom constant
 
     let zoom_in_counter = 0;
     let zoom_out_counter = 0;
@@ -102,9 +102,8 @@ function check_zoom_update(count_arr) {
         }
     }
 
-    zoom(zoom_in_counter);
-    zoom(zoom_out_counter);
+    zoom(0.5 * (zoom_in_counter + zoom_out_counter)); //set average to avoid weird glitch.
 }
 
 
-setInterval(poll_data, 20000);
+setInterval(poll_data, 7000);
