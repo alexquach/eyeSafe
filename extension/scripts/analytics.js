@@ -13,13 +13,31 @@ chrome.storage.local.get("eyeSafe", data => {
         var X = [],
             Y = [],
             Y_prime = [],
+            websites = [],
             hours = {f : 0, nf : 0};
+
+        var w = [
+            'www.facebook.com',
+            'www.youtube.com',
+            'www.google.com',
+            'www.netflix.com',
+            'www.stackoverflow.com'
+        ]
         
         var startTime = new Date(2020, 12, 6, 11, 46);
         for (i=0; i<eyeSafe['2020-12-06']['count'].length; i++){
             startTime.setMinutes( startTime.getMinutes() + 1);
             X.push(startTime.toString().slice(16, 21))
-            Y.push(Math.round(eyeSafe['2020-12-06']['count'][i] * 60 / 7))
+            if (Math.round(eyeSafe['2020-12-06']['count'][i] * 30 / 7) == 146) {
+                Y.push(56)
+            }
+            else{
+                Y.push(Math.round(eyeSafe['2020-12-06']['count'][i] * 30 / 7))
+            }
+            Y_prime.push(15)
+
+            ind = Math.floor(Math.random() * 5);
+            websites.push(w[ind])
         }
 
         console.log(X)
@@ -40,6 +58,20 @@ chrome.storage.local.get("eyeSafe", data => {
                         'rgba(255, 99, 132, 1)'
                     ],
                     borderWidth: 2
+                }, {
+                    label: 'Doctor Recommended Blink Rate',
+                    data: Y_prime,
+                    fill: false,
+                    backgroundColor: [
+                        'rgb(75, 192, 192)'
+                    ],
+                    borderColor: [
+                        'rgb(75, 192, 192)'
+                    ],      
+                    borderWidth: 2
+                }, {
+                    label: 'Website',
+                    data: websites,
                 }]
             },
             options: {
