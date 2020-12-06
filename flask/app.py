@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, Response, jsonify
 from flask_socketio import SocketIO, emit
 from io import StringIO
 import io
@@ -7,6 +7,7 @@ from PIL import Image
 import imutils
 import numpy as np
 import cv2
+from datetime import datetime
 
 import dlib
 from scipy.spatial import distance as dist
@@ -28,10 +29,8 @@ EYE_AR_THRESH = 0.22
 EYE_AR_CONSEC_FRAMES = 3
 EAR_AVG = 0
 
-global COUNTER
-global TOTAL
 COUNTER=0
-TOTAL=0
+TOTAL=[]
 
 def eye_aspect_ratio(eye):
     # compute the euclidean distance between the vertical eye landmarks
@@ -52,19 +51,24 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+@app.route('/poll', methods=['GET'])
+def poll():
+    global TOTAL
+    print(TOTAL)
+    response = {"count": len(TOTAL), "datetime": datetime.now().isoformat()}
+
+    TOTAL = []
+    return jsonify(response)
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     return render_template('second.html')
 
-# @socketio.on('catch-frame')
-# def catch_frame(data):
-#     ## getting the data frames
-#     ## do some processing
-#     ## send it back to client
-#     emit('response_back', data)  ## ??
-
 @socketio.on('image')
 def image(data_image):
+    global COUNTER
+    global TOTAL
+
     sbuf = StringIO()
     sbuf.write(data_image)
 
@@ -103,6 +107,7 @@ def image(data_image):
         # detect the eye blink
         
         if ear_avg < EYE_AR_THRESH:
+            TOTAL.append(datetime.now().isoformat())
             print(ear_avg) #blinked!
             
         # if ear_avg < EYE_AR_THRESH:
@@ -122,19 +127,6 @@ def image(data_image):
 
     # emit the frame back
     emit('response_back', stringData)
-
-    # # Process the image frame
-    # frame = imutils.resize(frame, width=700)
-    # frame = cv2.flip(frame, 1)
-    # imgencode = cv2.imencode('.jpg', frame)[1]
-
-    # # base64 encode
-    # stringData = base64.b64encode(imgencode).decode('utf-8')
-    # b64_src = 'data:image/jpg;base64,'
-    # stringData = b64_src + stringData
-
-    # # emit the frame back
-    # emit('response_back', stringData)
 
 
 if __name__ == '__main__':
