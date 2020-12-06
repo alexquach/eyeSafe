@@ -16,6 +16,12 @@ import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR) #remove constant logs and set to error only
 
+
+#### Bug Fix: ValueError(Too many packets in payload)
+from engineio.payload import Payload
+Payload.max_decode_packets = 500
+#### --- bug fix --- ###
+
 JAWLINE_POINTS = list(range(0, 17))
 RIGHT_EYEBROW_POINTS = list(range(17, 22))
 LEFT_EYEBROW_POINTS = list(range(22, 27))
