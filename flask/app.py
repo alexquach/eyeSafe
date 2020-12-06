@@ -132,12 +132,7 @@ def index():
 
 @socketio.on('image')
 def image(data_image):
-    global COUNTER
-    global TOTAL
-    global BOX_CHALLENGE
-    global START
-    global END
-    global AREA
+    global COUNTER, TOTAL, BOX_CHALLENGE, START, END, AREA
 
     sbuf = StringIO()
     sbuf.write(data_image)
@@ -152,6 +147,9 @@ def image(data_image):
     # convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     rects = detector(gray, 0)
+    if BOX_CHALLENGE and not START:
+        START, END, AREA = get_random_box(frame)
+
     for rect in rects:
         x = rect.left()
         y = rect.top()
@@ -159,20 +157,17 @@ def image(data_image):
         y1 = rect.bottom()
 
         if (BOX_CHALLENGE): 
-            if not START:
-                START, END, AREA = get_random_box(frame)
-            else:
-                x_diff = abs(x-START[0])
-                y_diff = abs(y-START[1])
-                area_diff = abs(AREA- (x1-x) * (y1-y) )
+            x_diff = abs(x-START[0])
+            y_diff = abs(y-START[1])
+            area_diff = abs(AREA- (x1-x) * (y1-y) )
 
-                print("X: {}".format(x_diff))
-                print("Y: {}".format(y_diff))
-                print("Area: {}".format(area_diff))
+            # print("X: {}".format(x_diff))
+            # print("Y: {}".format(y_diff))
+            # print("Area: {}".format(area_diff))
 
-                if x_diff < 10 and y_diff < 10 and area_diff < 5000:
-                    BOX_CHALLENGE = False
-                    START, END, AREA = None, None, None
+            if x_diff < 10 and y_diff < 10 and area_diff < 5000:
+                BOX_CHALLENGE = False
+                START, END, AREA = None, None, None
 
 
         # get the facial landmarks
