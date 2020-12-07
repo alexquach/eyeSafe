@@ -12,6 +12,7 @@
   <a href="https://twitter.com/intent/tweet?text=eyeSafe%20-%20Keep%20you%20and%20eye%20safe!&url=https://github.com/alexquach/eyeSafe/&hashtags=webmd,health,devpost,coding,python,javascript,chrome"> <img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social"> </a>
 </p>
 
+# Winner of the best Health Hack - HackDuke 2020
 
 ### Check it out!
 
